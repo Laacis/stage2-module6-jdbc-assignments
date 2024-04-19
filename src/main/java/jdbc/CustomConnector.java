@@ -10,7 +10,7 @@ public class CustomConnector {
         try {
             conn = DriverManager.getConnection(url);
         }catch (SQLException e){
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
 
         return conn;
@@ -22,7 +22,7 @@ public class CustomConnector {
         try {
             conn = DriverManager.getConnection(url, user, password);
         }catch (SQLException e){
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
 
         return conn;

@@ -17,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CustomDataSource implements DataSource {
+    private static final SQLException SQL_EXCEPTION = new SQLException();
     private static volatile CustomDataSource instance;
     private final String driver;
     private final String url;
@@ -33,17 +34,19 @@ public class CustomDataSource implements DataSource {
     public static CustomDataSource getInstance() {
         if (instance == null) {
             synchronized (CustomDataSource.class) {
-                try {
-                    Properties properties = new Properties();
-                    properties.load(new FileInputStream("../../resources/app.properties"));
-                    String driver = properties.getProperty("postgres.driver");
-                    String url = properties.getProperty("postgres.url");
-                    String password = properties.getProperty("postgres.password");
-                    String name = properties.getProperty("postgres.name");
+                if (instance == null) {
+                    try {
+                        Properties properties = new Properties();
+                        properties.load(new FileInputStream("../../resources/app.properties"));
+                        String driver = properties.getProperty("postgres.driver");
+                        String url = properties.getProperty("postgres.url");
+                        String password = properties.getProperty("postgres.password");
+                        String name = properties.getProperty("postgres.name");
 
-                    instance = new CustomDataSource(driver,url,password,name);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        instance = new CustomDataSource(driver, url, password, name);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -66,36 +69,36 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        return null;
+        throw  SQL_EXCEPTION;
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-
+        throw  SQL_EXCEPTION;
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-
+        throw  SQL_EXCEPTION;
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        return 0;
+        throw  SQL_EXCEPTION;
     }
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return null;
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return null;
+        throw  SQL_EXCEPTION;
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;
+        throw  SQL_EXCEPTION;
     }
 }

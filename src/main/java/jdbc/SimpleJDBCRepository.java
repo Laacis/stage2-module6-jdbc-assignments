@@ -42,13 +42,13 @@ public class SimpleJDBCRepository {
             }
 
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while working with db:", e);
         } finally {
             try {
                 if (ps != null) ps.close();
                 if (connection != null) connection.close();
             } catch (SQLException e){
-                e.printStackTrace();
+                throw new RuntimeException("Something went wrong while closing connection or statement:", e);
             }
         }
         return id;
@@ -63,7 +63,7 @@ public class SimpleJDBCRepository {
             ps = connection.prepareCall(findUserByIdSQL);
             ps.setLong(1, userId);
 
-            rs = ps.executeQuery(); // Assign ResultSet reference
+            rs = ps.executeQuery();
             while (rs.next()) {
                 user.setId(rs.getLong("id"));
                 user.setFirstName(rs.getString("firstname"));
@@ -71,14 +71,14 @@ public class SimpleJDBCRepository {
                 user.setAge(rs.getInt("age"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while working with db:", e);
         } finally {
             try {
                 if (rs != null) rs.close();
                 if (ps != null) ps.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Something went wrong while closing connection, statement or ResultSet:", e);
             }
         }
 
@@ -103,14 +103,14 @@ public class SimpleJDBCRepository {
                 user.setAge(rs.getInt("age"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while working with db:", e);
         } finally {
             try {
                 if (rs != null) rs.close();
                 if (ps != null) ps.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Something went wrong while closing connection, statement or ResultSet:", e);
             }
         }
 
@@ -135,14 +135,14 @@ public class SimpleJDBCRepository {
                 users.add(user);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while working with db:", e);
         } finally {
             try {
                 if (rs != null) rs.close();
                 if (ps != null) ps.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Something went wrong while closing connection, statement or ResultSet:", e);
             }
         }
 
@@ -163,13 +163,13 @@ public class SimpleJDBCRepository {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while working with db:", e);
         }finally {
             try {
                 if (ps != null) ps.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Something went wrong while closing connection or statement:", e);
             }
         }
 
@@ -180,17 +180,17 @@ public class SimpleJDBCRepository {
         try{
             connection = CustomDataSource.getInstance().getConnection();
             st = connection.prepareCall(deleteUser);
-
+            ps.setLong(1, userId);
             ps.executeUpdate();
 
         }catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while working with db:", e);
         } finally {
             try {
                 if (ps != null) ps.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Something went wrong while closing connection or statement:", e);
             }
         }
     }
