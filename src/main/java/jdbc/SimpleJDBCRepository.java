@@ -176,7 +176,7 @@ public class SimpleJDBCRepository {
         return findUserById(userId);
     }
 
-    private void deleteUser(Long userId) {
+    public void deleteUser(Long userId) {
         try{
             connection = CustomDataSource.getInstance().getConnection();
             st = connection.prepareCall(deleteUser);
