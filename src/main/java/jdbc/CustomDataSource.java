@@ -46,9 +46,10 @@ public class CustomDataSource implements DataSource {
                         String password = properties.getProperty("postgres.password");
                         String name = properties.getProperty("postgres.name");
 
+                        Class.forName(driver);
                         instance = new CustomDataSource(driver, url, password, name);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -72,22 +73,22 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        throw  SQL_EXCEPTION;
+        throw SQL_EXCEPTION;
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        throw  SQL_EXCEPTION;
+        throw SQL_EXCEPTION;
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        throw  SQL_EXCEPTION;
+        throw SQL_EXCEPTION;
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        throw  SQL_EXCEPTION;
+        throw SQL_EXCEPTION;
     }
 
     @Override
@@ -97,11 +98,11 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw  SQL_EXCEPTION;
+        throw SQL_EXCEPTION;
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        throw  SQL_EXCEPTION;
+        throw SQL_EXCEPTION;
     }
 }
