@@ -3,6 +3,7 @@ package jdbc;
 import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,9 +36,12 @@ public class CustomDataSource implements DataSource {
         if (instance == null) {
             synchronized (CustomDataSource.class) {
                 if (instance == null) {
-                    try {
+                    try (InputStream inputStream = CustomDataSource.class.getResourceAsStream("app.properties")){
+                        if (inputStream == null){
+                            throw  new RuntimeException("app.properties file not found");
+                        }
                         Properties properties = new Properties();
-                        properties.load(new FileInputStream("../../resources/app.properties"));
+                        properties.load(inputStream);
                         String driver = properties.getProperty("postgres.driver");
                         String url = properties.getProperty("postgres.url");
                         String password = properties.getProperty("postgres.password");
