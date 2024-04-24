@@ -55,23 +55,15 @@ public class SimpleJDBCRepository {
 
     public User findUserById(Long userId) {
         User user = new User();
-        ResultSet rs = null;
 
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(findUserByIdSQL);
             ps.setLong(1, userId);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                user.setId(rs.getLong("id"));
-                user.setFirstName(rs.getString("firstname"));
-                user.setLastName(rs.getString("lastname"));
-                user.setAge(rs.getInt("age"));
-            }
+            getUserFromResult(user);
         } catch (SQLException e) {
             throw new RuntimeException( e);
         } finally {
-            closeResultSet(rs);
             closeStatement(ps);
             closeConnection(connection);
         }
@@ -79,29 +71,18 @@ public class SimpleJDBCRepository {
         return user;
     }
 
-
-
     public User findUserByName(String userName) {
         User user = new User();
-        ResultSet rs = null;
 
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareCall(findUserByNameSQL);
 
             ps.setString(1,userName);
-            rs = ps.executeQuery();
-
-            while(rs.next()){
-                user.setId(rs.getLong("id"));
-                user.setFirstName(rs.getString("firstname"));
-                user.setLastName(rs.getString("lastname"));
-                user.setAge(rs.getInt("age"));
-            }
+            getUserFromResult(user);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            closeResultSet(rs);
             closeStatement(ps);
             closeConnection(connection);
         }
@@ -111,25 +92,24 @@ public class SimpleJDBCRepository {
 
     public List<User> findAllUser() {
         List<User> users = new ArrayList<>();
-        ResultSet rs = null;
 
         try {
             connection = CustomDataSource.getInstance().getConnection();
             st = connection.createStatement();
 
-            rs = st.executeQuery(findAllUserSQL);
-            while(rs.next()){
-                User user = new User();
-                user.setId(rs.getLong("id"));
-                user.setFirstName(rs.getString("firstname"));
-                user.setLastName(rs.getString("lastname"));
-                user.setAge(rs.getInt("age"));
-                users.add(user);
+            try (ResultSet rs = st.executeQuery(findAllUserSQL)){
+                while(rs.next()){
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setFirstName(rs.getString("firstname"));
+                    user.setLastName(rs.getString("lastname"));
+                    user.setAge(rs.getInt("age"));
+                    users.add(user);
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            closeResultSet(rs);
             closeStatement(st);
             closeConnection(connection);
         }
@@ -149,7 +129,6 @@ public class SimpleJDBCRepository {
             ps.setInt(3,user.getAge());
             ps.setLong(4,userId);
             ps.executeUpdate();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }finally {
@@ -166,7 +145,6 @@ public class SimpleJDBCRepository {
             ps = connection.prepareStatement(deleteUser);
             ps.setLong(1, userId);
             ps.executeUpdate();
-
         }catch (SQLException e){
             throw new RuntimeException(e);
         } finally {
@@ -191,12 +169,14 @@ public class SimpleJDBCRepository {
         }
     }
 
-    private void closeResultSet(ResultSet rs) {
-        try {
-            if (rs != null) rs.close();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private void getUserFromResult(User user) throws SQLException {
+        try(ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                user.setId(rs.getLong("id"));
+                user.setFirstName(rs.getString("firstname"));
+                user.setLastName(rs.getString("lastname"));
+                user.setAge(rs.getInt("age"));
+            }
         }
     }
 }
