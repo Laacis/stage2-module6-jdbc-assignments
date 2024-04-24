@@ -1,7 +1,6 @@
 package jdbc;
 
 import javax.sql.DataSource;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -36,7 +35,7 @@ public class CustomDataSource implements DataSource {
         if (instance == null) {
             synchronized (CustomDataSource.class) {
                 if (instance == null) {
-                    try (InputStream inputStream = CustomDataSource.class.getResourceAsStream("app.properties")){
+                    try (InputStream inputStream = CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties")){
                         if (inputStream == null){
                             throw  new RuntimeException("app.properties file not found");
                         }
