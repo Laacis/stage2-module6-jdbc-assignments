@@ -20,27 +20,30 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    private static final String createUserSQL = "INSERT INTO myusers DEFAULT VALUES";
+    private static final String createUserSQL = "INSERT INTO myusers (firstname, lastname, age) VALUES (?, ?, ?)";
     private static final String updateUserSQL = "UPDATE myusers  SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
     private static final String deleteUser = "DELETE * FROM myusers WHERE id = ?";
     private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id = ?";
     private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstname = ?";
     private static final String findAllUserSQL = "SELECT * FROM myusers";
 
-    public Long createUser() {
+    public Long createUser(User user) {
         Long id = null;
         try {
             connection = CustomDataSource.getInstance().getConnection();
             st = connection.prepareCall(createUserSQL);
 
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
             int updatedRows = ps.executeUpdate();
+
             if (updatedRows > 0){
                 ResultSet rs = ps.getResultSet();
                 if (rs.next()){
                     id = rs.getLong("id");
                 }
             }
-
         } catch (SQLException e){
             throw new RuntimeException("Something went wrong while working with db:", e);
         } finally {
